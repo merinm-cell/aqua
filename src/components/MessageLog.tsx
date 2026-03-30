@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { WaterQualityReading, SAFE_RANGES, isValueSafe } from '../types';
+import { WaterQualityReading, isValueSafe } from '../types';
 import { supabase } from '../lib/supabase';
 import { AlertTriangle } from 'lucide-react';
+import { useSafeRanges } from '../hooks/useSafeRanges';
 
 interface MessageLogProps {
   latestReading: WaterQualityReading | null;
@@ -9,6 +10,7 @@ interface MessageLogProps {
 
 export function MessageLog({ latestReading }: MessageLogProps) {
   const [readings, setReadings] = useState<WaterQualityReading[]>([]);
+  const { safeRanges } = useSafeRanges();
 
   useEffect(() => {
     fetchRecentReadings();
@@ -48,9 +50,9 @@ export function MessageLog({ latestReading }: MessageLogProps) {
 
   function hasAlert(reading: WaterQualityReading): boolean {
     return (
-      !isValueSafe(reading.temperature, SAFE_RANGES.temperature) ||
-      !isValueSafe(reading.ph, SAFE_RANGES.ph) ||
-      !isValueSafe(reading.turbidity, SAFE_RANGES.turbidity)
+      !isValueSafe(reading.temperature, safeRanges.temperature) ||
+      !isValueSafe(reading.ph, safeRanges.ph) ||
+      !isValueSafe(reading.turbidity, safeRanges.turbidity)
     );
   }
 
@@ -94,7 +96,7 @@ export function MessageLog({ latestReading }: MessageLogProps) {
                     </td>
                     <td
                       className={`py-3 px-2 text-right font-mono ${
-                        !isValueSafe(reading.temperature, SAFE_RANGES.temperature)
+                        !isValueSafe(reading.temperature, safeRanges.temperature)
                           ? 'text-red-600 font-semibold'
                           : 'text-gray-900'
                       }`}
@@ -103,7 +105,7 @@ export function MessageLog({ latestReading }: MessageLogProps) {
                     </td>
                     <td
                       className={`py-3 px-2 text-right font-mono ${
-                        !isValueSafe(reading.ph, SAFE_RANGES.ph)
+                        !isValueSafe(reading.ph, safeRanges.ph)
                           ? 'text-red-600 font-semibold'
                           : 'text-gray-900'
                       }`}
@@ -112,7 +114,7 @@ export function MessageLog({ latestReading }: MessageLogProps) {
                     </td>
                     <td
                       className={`py-3 px-2 text-right font-mono ${
-                        !isValueSafe(reading.turbidity, SAFE_RANGES.turbidity)
+                        !isValueSafe(reading.turbidity, safeRanges.turbidity)
                           ? 'text-red-600 font-semibold'
                           : 'text-gray-900'
                       }`}

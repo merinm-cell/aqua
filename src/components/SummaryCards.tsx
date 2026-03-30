@@ -1,5 +1,6 @@
 import { Thermometer, Droplet, Activity, Hash } from 'lucide-react';
-import { WaterQualityReading, SAFE_RANGES, isValueSafe } from '../types';
+import { WaterQualityReading, isValueSafe } from '../types';
+import { useSafeRanges } from '../hooks/useSafeRanges';
 
 interface SummaryCardsProps {
   reading: WaterQualityReading | null;
@@ -61,6 +62,8 @@ function MetricCard({ icon, label, value, unit, isAlert, range }: MetricCardProp
 }
 
 export function SummaryCards({ reading }: SummaryCardsProps) {
+  const { safeRanges } = useSafeRanges();
+
   if (!reading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -82,9 +85,9 @@ export function SummaryCards({ reading }: SummaryCardsProps) {
     );
   }
 
-  const tempSafe = isValueSafe(reading.temperature, SAFE_RANGES.temperature);
-  const phSafe = isValueSafe(reading.ph, SAFE_RANGES.ph);
-  const turbiditySafe = isValueSafe(reading.turbidity, SAFE_RANGES.turbidity);
+  const tempSafe = isValueSafe(reading.temperature, safeRanges.temperature);
+  const phSafe = isValueSafe(reading.ph, safeRanges.ph);
+  const turbiditySafe = isValueSafe(reading.turbidity, safeRanges.turbidity);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -94,7 +97,7 @@ export function SummaryCards({ reading }: SummaryCardsProps) {
         value={reading.temperature.toFixed(1)}
         unit="°C"
         isAlert={!tempSafe}
-        range={`${SAFE_RANGES.temperature.min}-${SAFE_RANGES.temperature.max}°C`}
+        range={`${safeRanges.temperature.min}-${safeRanges.temperature.max}°C`}
       />
       <MetricCard
         icon={<Droplet className={`w-6 h-6 ${phSafe ? 'text-blue-600' : 'text-red-600'}`} />}
@@ -102,7 +105,7 @@ export function SummaryCards({ reading }: SummaryCardsProps) {
         value={reading.ph.toFixed(2)}
         unit=""
         isAlert={!phSafe}
-        range={`${SAFE_RANGES.ph.min}-${SAFE_RANGES.ph.max}`}
+        range={`${safeRanges.ph.min}-${safeRanges.ph.max}`}
       />
       <MetricCard
         icon={<Activity className={`w-6 h-6 ${turbiditySafe ? 'text-blue-600' : 'text-red-600'}`} />}
@@ -110,7 +113,7 @@ export function SummaryCards({ reading }: SummaryCardsProps) {
         value={reading.turbidity.toFixed(2)}
         unit="NTU"
         isAlert={!turbiditySafe}
-        range={`${SAFE_RANGES.turbidity.min}-${SAFE_RANGES.turbidity.max} NTU`}
+        range={`${safeRanges.turbidity.min}-${safeRanges.turbidity.max} NTU`}
       />
       <MetricCard
         icon={<Hash className="w-6 h-6 text-blue-600" />}

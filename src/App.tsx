@@ -1,12 +1,19 @@
-import { Droplets } from 'lucide-react';
+import { useState } from 'react';
+import { Droplets, Settings } from 'lucide-react';
 import { useMqtt } from './hooks/useMqtt';
 import { StatusIndicator } from './components/StatusIndicator';
 import { SummaryCards } from './components/SummaryCards';
 import { LineChart } from './components/LineChart';
 import { MessageLog } from './components/MessageLog';
+import { AlertSettingsPage } from './pages/AlertSettingsPage';
 
 function App() {
   const { isConnected, latestReading, error } = useMqtt();
+  const [showAlertSettings, setShowAlertSettings] = useState(false);
+
+  if (showAlertSettings) {
+    return <AlertSettingsPage onBack={() => setShowAlertSettings(false)} />;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50">
@@ -24,7 +31,16 @@ function App() {
                 <p className="text-sm text-gray-600">Real-time IoT Dashboard</p>
               </div>
             </div>
-            <StatusIndicator isConnected={isConnected} error={error} />
+            <div className="flex items-center gap-4">
+              <StatusIndicator isConnected={isConnected} error={error} />
+              <button
+                onClick={() => setShowAlertSettings(true)}
+                className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+              >
+                <Settings className="w-5 h-5" />
+                <span className="hidden sm:inline">Alert Settings</span>
+              </button>
+            </div>
           </div>
         </div>
       </header>
